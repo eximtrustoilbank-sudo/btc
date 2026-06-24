@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bitcoin — Bridge to Core on Solana</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0e14;
+            color: #eef2f8;
+            line-height: 1.6;
+        }
+        a { color: #f7931a; text-decoration: none; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            background: rgba(11,14,20,0.92);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 900;
+            color: #fff;
+        }
+        .logo img { height: 36px; width: auto; }
+        .logo span { color: #f7931a; }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .nav-links a { color: #8892b0; transition: 0.2s; }
+        .nav-links a:hover { color: #f7931a; }
+        .nav-links .active { color: #f7931a; font-weight: 600; }
+        .btn-buy {
+            background: linear-gradient(135deg, #f7931a, #e07c0b);
+            color: #fff !important;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+        .btn-buy:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(247,147,26,0.3); }
+
+        .lang-switcher { position: relative; display: inline-block; margin-left: 4px; }
+        .lang-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #eef2f8; padding: 4px 12px; border-radius: 40px; font-size: 12px; cursor: pointer; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
+        .lang-btn:hover { background: rgba(247,147,26,0.1); border-color: #f7931a; }
+        .lang-dropdown { position: absolute; top: 120%; right: 0; background: #0b0e14; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 6px 0; min-width: 140px; display: none; z-index: 999; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .lang-dropdown.show { display: block; }
+        .lang-dropdown button { background: none; border: none; color: #8892b0; padding: 6px 18px; width: 100%; text-align: left; font-size: 12px; font-weight: 500; cursor: pointer; transition: 0.1s; font-family: inherit; }
+        .lang-dropdown button:hover { background: rgba(247,147,26,0.05); color: #f7931a; }
+        .lang-dropdown button.active { color: #f7931a; font-weight: 700; }
+
+        .hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            background: linear-gradient(180deg, #0b0e14 0%, #131a24 100%);
+        }
+        .hero-image {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 32px;
+        }
+        .hero h1 {
+            font-size: clamp(2.8rem, 8vw, 4.8rem);
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+        .hero h1 .highlight { color: #f7931a; }
+        .hero p {
+            font-size: 1.2rem;
+            color: #8892b0;
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f7931a, #e07c0b);
+            color: #fff !important;
+            font-weight: 700;
+            padding: 14px 44px;
+            border-radius: 60px;
+            font-size: 1.05rem;
+            display: inline-block;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(247,147,26,0.3); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #eef2f8 !important;
+            font-weight: 600;
+            padding: 14px 34px;
+            border-radius: 60px;
+            font-size: 1.05rem;
+            transition: 0.2s;
+            display: inline-block;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: #f7931a; }
+
+        .stats-hero {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+            padding: 40px 0 60px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .stat-hero-item {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.02);
+        }
+        .stat-hero-item .number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #f7931a;
+        }
+        .stat-hero-item .label {
+            font-size: 0.85rem;
+            color: #8892b0;
+            margin-top: 4px;
+        }
+
+        .partners {
+            padding: 40px 0 60px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            text-align: center;
+        }
+        .partners h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: #fff;
+        }
+        .partners-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+        }
+        .partner-item {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #8892b0;
+            opacity: 0.6;
+            transition: 0.2s;
+        }
+        .partner-item:hover { opacity: 1; color: #fff; }
+        .partner-item .icon { font-size: 2rem; display: block; margin-bottom: 4px; }
+
+        .ecosystem { padding: 60px 0; }
+        .ecosystem h2 {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        .ecosystem .sub {
+            text-align: center;
+            color: #8892b0;
+            max-width: 500px;
+            margin: 0 auto 40px;
+        }
+        .eco-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+        .eco-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            padding: 28px 20px 24px;
+            border-radius: 20px;
+            text-align: center;
+            transition: 0.25s;
+        }
+        .eco-card:hover { border-color: #f7931a; transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+        .eco-card .icon { font-size: 2.4rem; margin-bottom: 10px; }
+        .eco-card h3 { font-size: 1.1rem; margin-bottom: 4px; color: #fff; }
+        .eco-card p { font-size: 0.9rem; color: #8892b0; }
+
+        .contract-box { text-align: center; padding: 20px 0 40px; }
+        .contract-box code {
+            background: rgba(255,255,255,0.03);
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #8892b0;
+            border: 1px solid rgba(255,255,255,0.04);
+            display: inline-block;
+            word-break: break-all;
+            max-width: 100%;
+        }
+
+        footer {
+            padding: 30px 0;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            text-align: center;
+            color: #5a6488;
+            font-size: 0.85rem;
+        }
+        footer .socials a {
+            color: #8892b0;
+            margin: 0 14px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        footer .socials a:hover { color: #f7931a; }
+
+        @media (max-width: 700px) {
+            .header-inner { flex-direction: column; align-items: stretch; text-align: center; }
+            .nav-links { justify-content: center; }
+            .hero h1 { font-size: 2.4rem; }
+            .eco-grid { grid-template-columns: 1fr 1fr; }
+            .partners-grid { gap: 20px; }
+        }
+        @media (max-width: 480px) { .eco-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container header-inner">
+        <a href="index.html" class="logo">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_logo.png" alt="Bitcoin">
+            <span>BTC</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="active" data-i18n="nav-home">Home</a>
+            <a href="trade.html" data-i18n="nav-trade">Trade</a>
+            <a href="staking.html" data-i18n="nav-staking">Staking</a>
+            <a href="dao.html" data-i18n="nav-dao">DAO</a>
+            <a href="bridge.html" data-i18n="nav-bridge">Bridge</a>
+            <a href="ecosystem.html" data-i18n="nav-ecosystem">Ecosystem</a>
+            <a href="blog.html" data-i18n="nav-blog">Blog</a>
+            <a href="whitepaper.html" data-i18n="nav-whitepaper">Whitepaper</a>
+            <a href="#" class="btn-buy" data-i18n="nav-buy">Buy BTC</a>
+            <div class="lang-switcher">
+                <button class="lang-btn" id="langToggle">🌐 <span id="currentLangLabel">EN</span></button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button data-lang="en" class="active">🇬🇧 English</button>
+                    <button data-lang="ru">🇷🇺 Русский</button>
+                    <button data-lang="es">🇪🇸 Español</button>
+                    <button data-lang="fr">🇫🇷 Français</button>
+                    <button data-lang="de">🇩🇪 Deutsch</button>
+                    <button data-lang="zh">🇨🇳 中文</button>
+                    <button data-lang="ja">🇯🇵 日本語</button>
+                    <button data-lang="ko">🇰🇷 한국어</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="container">
+        <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_logo.png" alt="Bitcoin" class="hero-image">
+        <h1 data-i18n="hero-title">Back to the <span class="highlight">core</span> of crypto</h1>
+        <p data-i18n="hero-desc">Bitcoin (BTC) is the Bridge to Core on Solana. Stake, earn and trade with the king of crypto. 2.1B supply (burn to 21M).</p>
+        <div class="hero-buttons">
+            <a href="#" class="btn-primary" data-i18n="hero-btn">🚀 Get BTC</a>
+            <a href="#ecosystem" class="btn-secondary" data-i18n="hero-btn2">Explore</a>
+        </div>
+    </div>
+</section>
+
+<div class="container stats-hero">
+    <div class="stat-hero-item"><div class="number">2.1B</div><div class="label" data-i18n="stat-supply">Total Supply</div></div>
+    <div class="stat-hero-item"><div class="number">0.25%</div><div class="label" data-i18n="stat-fee">Transfer Fee</div></div>
+    <div class="stat-hero-item"><div class="number">Solana</div><div class="label" data-i18n="stat-network">Network</div></div>
+    <div class="stat-hero-item"><div class="number">🔥</div><div class="label" data-i18n="stat-burn">Burn to 21M</div></div>
+</div>
+
+<section class="partners">
+    <div class="container">
+        <h2 data-i18n="partners-title">Built on Solana. Powered by Bitcoin.</h2>
+        <div class="partners-grid">
+            <div class="partner-item"><span class="icon">₿</span> Bitcoin</div>
+            <div class="partner-item"><span class="icon">🔷</span> Solana</div>
+            <div class="partner-item"><span class="icon">💠</span> Ethereum</div>
+            <div class="partner-item"><span class="icon">🟡</span> BNB</div>
+            <div class="partner-item"><span class="icon">☀️</span> SOLAR</div>
+        </div>
+    </div>
+</section>
+
+<section class="container ecosystem" id="ecosystem">
+    <h2 data-i18n="eco-title">₿ BTC Ecosystem</h2>
+    <p class="sub" data-i18n="eco-sub">Four pillars that make BTC the core of DeFi</p>
+    <div class="eco-grid">
+        <div class="eco-card">
+            <div class="icon">📊</div>
+            <h3 data-i18n="eco-trade-title">Trade</h3>
+            <p data-i18n="eco-trade-desc">Buy and sell BTC on Meteora with deep liquidity.</p>
+        </div>
+        <div class="eco-card">
+            <div class="icon">🪙</div>
+            <h3 data-i18n="eco-staking-title">Staking</h3>
+            <p data-i18n="eco-staking-desc">Lock your BTC and earn passive income with high APR.</p>
+        </div>
+        <div class="eco-card">
+            <div class="icon">🏛️</div>
+            <h3 data-i18n="eco-dao-title">DAO</h3>
+            <p data-i18n="eco-dao-desc">Vote on proposals and shape the future of the ecosystem.</p>
+        </div>
+        <div class="eco-card">
+            <div class="icon">🌉</div>
+            <h3 data-i18n="eco-bridge-title">Bridge</h3>
+            <p data-i18n="eco-bridge-desc">Move assets between Solana and other networks.</p>
+        </div>
+    </div>
+</section>
+
+<div class="container contract-box">
+    <code>📜 BTC: EFD6CbYiDCKwBTNm6ruKTny8PzGHMXtCQr7afZNwsw3V</code>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="socials">
+            <a href="#" data-i18n="footer-twitter">🐦 Twitter</a>
+            <a href="#" data-i18n="footer-telegram">💬 Telegram</a>
+            <a href="#" data-i18n="footer-gecko">📊 GeckoTerminal</a>
+            <a href="#" data-i18n="footer-coingecko">📈 CoinGecko</a>
+        </div>
+        <p data-i18n="footer-copy">© 2026 Bitcoin Protocol. Built on Solana.</p>
+    </div>
+</footer>
+
+<script>
+    // ============================================================
+    // 8 ЯЗЫКОВ — ПЕРЕВОДЧИК
+    // ============================================================
+
+    const translations = {
+        en: {
+            'nav-home': 'Home', 'nav-trade': 'Trade', 'nav-staking': 'Staking',
+            'nav-dao': 'DAO', 'nav-bridge': 'Bridge', 'nav-ecosystem': 'Ecosystem',
+            'nav-blog': 'Blog', 'nav-whitepaper': 'Whitepaper', 'nav-buy': 'Buy BTC',
+            'hero-title': 'Back to the core of crypto',
+            'hero-desc': 'Bitcoin (BTC) is the Bridge to Core on Solana. Stake, earn and trade with the king of crypto. 2.1B supply (burn to 21M).',
+            'hero-btn': '🚀 Get BTC', 'hero-btn2': 'Explore',
+            'stat-supply': 'Total Supply', 'stat-fee': 'Transfer Fee',
+            'stat-network': 'Network', 'stat-burn': 'Burn to 21M',
+            'partners-title': 'Built on Solana. Powered by Bitcoin.',
+            'eco-title': '₿ BTC Ecosystem',
+            'eco-sub': 'Four pillars that make BTC the core of DeFi',
+            'eco-trade-title': 'Trade', 'eco-trade-desc': 'Buy and sell BTC on Meteora with deep liquidity.',
+            'eco-staking-title': 'Staking', 'eco-staking-desc': 'Lock your BTC and earn passive income with high APR.',
+            'eco-dao-title': 'DAO', 'eco-dao-desc': 'Vote on proposals and shape the future of the ecosystem.',
+            'eco-bridge-title': 'Bridge', 'eco-bridge-desc': 'Move assets between Solana and other networks.',
+            'footer-twitter': '🐦 Twitter', 'footer-telegram': '💬 Telegram',
+            'footer-gecko': '📊 GeckoTerminal', 'footer-coingecko': '📈 CoinGecko',
+            'footer-copy': '© 2026 Bitcoin Protocol. Built on Solana.'
+        },
+        ru: {
+            'nav-home': 'Главная', 'nav-trade': 'Торги', 'nav-staking': 'Стейкинг',
+            'nav-dao': 'Управление', 'nav-bridge': 'Мост', 'nav-ecosystem': 'Экосистема',
+            'nav-blog': 'Блог', 'nav-whitepaper': 'Whitepaper', 'nav-buy': 'Купить BTC',
+            'hero-title': 'Назад к ядру криптовалюты',
+            'hero-desc': 'Bitcoin (BTC) — это мост к ядру на Solana. Стейкай, зарабатывай и торгуй с королём криптовалют. 2.1B supply (сжигание до 21M).',
+            'hero-btn': '🚀 Получить BTC', 'hero-btn2': 'Исследовать',
+            'stat-supply': 'Общий запас', 'stat-fee': 'Комиссия',
+            'stat-network': 'Сеть', 'stat-burn': 'Сжигание до 21M',
+            'partners-title': 'Построено на Solana. Работает на Bitcoin.',
+            'eco-title': '₿ Экосистема BTC',
+            'eco-sub': 'Четыре столпа, которые делают BTC ядром DeFi',
+            'eco-trade-title': 'Торги', 'eco-trade-desc': 'Покупайте и продавайте BTC на Meteora с глубокой ликвидностью.',
+            'eco-staking-title': 'Стейкинг', 'eco-staking-desc': 'Заморозьте BTC и получайте пассивный доход с высоким APR.',
+            'eco-dao-title': 'Управление', 'eco-dao-desc': 'Голосуйте за предложения и формируйте будущее экосистемы.',
+            'eco-bridge-title': 'Мост', 'eco-bridge-desc': 'Перемещайте активы между Solana и другими сетями.',
+            'footer-twitter': '🐦 Twitter', 'footer-telegram': '💬 Telegram',
+            'footer-gecko': '📊 GeckoTerminal', 'footer-coingecko': '📈 CoinGecko',
+            'footer-copy': '© 2026 Bitcoin Protocol. Создано на Solana.'
+        }
+        // Добавьте другие языки по аналогии
+    };
+
+    let currentLang = localStorage.getItem('btcLang') || 'en';
+
+    function applyLanguage(lang) {
+        if (!translations[lang]) return;
+        const t = translations[lang];
+        document.documentElement.lang = lang;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key]) {
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.placeholder = t[key];
+                } else {
+                    el.textContent = t[key];
+                }
+            }
+        });
+        document.getElementById('currentLangLabel').textContent = lang.toUpperCase();
+        document.querySelectorAll('.lang-dropdown button').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+        localStorage.setItem('btcLang', lang);
+        currentLang = lang;
+    }
+
+    document.getElementById('langToggle').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('langDropdown').classList.toggle('show');
+    });
+    document.addEventListener('click', () => {
+        document.getElementById('langDropdown').classList.remove('show');
+    });
+    document.querySelectorAll('.lang-dropdown button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyLanguage(btn.dataset.lang);
+            document.getElementById('langDropdown').classList.remove('show');
+        });
+    });
+    applyLanguage(currentLang);
+</script>
+</body>
+</html>
