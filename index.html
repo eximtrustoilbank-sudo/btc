@@ -78,9 +78,13 @@
             background: linear-gradient(180deg, #0b0e14 0%, #131a24 100%);
         }
         .hero-image {
-            width: 120px;
-            height: 120px;
+            width: 100%;
+            max-width: 900px;
+            height: auto;
+            border-radius: 24px;
             margin-bottom: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.04);
         }
         .hero h1 {
             font-size: clamp(2.8rem, 8vw, 4.8rem);
@@ -251,6 +255,7 @@
             .hero h1 { font-size: 2.4rem; }
             .eco-grid { grid-template-columns: 1fr 1fr; }
             .partners-grid { gap: 20px; }
+            .hero-image { border-radius: 16px; }
         }
         @media (max-width: 480px) { .eco-grid { grid-template-columns: 1fr; } }
     </style>
@@ -292,7 +297,7 @@
 
 <section class="hero">
     <div class="container">
-        <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_logo.png" alt="Bitcoin" class="hero-image">
+        <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_hero.jpg" alt="Bitcoin" class="hero-image">
         <h1 data-i18n="hero-title">Back to the <span class="highlight">core</span> of crypto</h1>
         <p data-i18n="hero-desc">Bitcoin (BTC) is the Bridge to Core on Solana. Stake, earn and trade with the king of crypto. 2.1B supply (burn to 21M).</p>
         <div class="hero-buttons">
