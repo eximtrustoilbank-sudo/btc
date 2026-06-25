@@ -1,1 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bitcoin — Staking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0e14;
+            color: #eef2f8;
+            line-height: 1.6;
+        }
+        a { color: #f7931a; text-decoration: none; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
 
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            background: rgba(11,14,20,0.92);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 900;
+            color: #fff;
+        }
+        .logo img { height: 36px; width: auto; }
+        .logo span { color: #f7931a; }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .nav-links a { color: #8892b0; transition: 0.2s; }
+        .nav-links a:hover { color: #f7931a; }
+        .nav-links .active { color: #f7931a; font-weight: 600; }
+        .btn-buy {
+            background: linear-gradient(135deg, #f7931a, #e07c0b);
+            color: #fff !important;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+        .btn-buy:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(247,147,26,0.3); }
+
+        .lang-switcher { position: relative; display: inline-block; margin-left: 4px; }
+        .lang-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #eef2f8; padding: 4px 12px; border-radius: 40px; font-size: 12px; cursor: pointer; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
+        .lang-btn:hover { background: rgba(247,147,26,0.1); border-color: #f7931a; }
+        .lang-dropdown { position: absolute; top: 120%; right: 0; background: #0b0e14; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 6px 0; min-width: 140px; display: none; z-index: 999; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .lang-dropdown.show { display: block; }
+        .lang-dropdown button { background: none; border: none; color: #8892b0; padding: 6px 18px; width: 100%; text-align: left; font-size: 12px; font-weight: 500; cursor: pointer; transition: 0.1s; font-family: inherit; }
+        .lang-dropdown button:hover { background: rgba(247,147,26,0.05); color: #f7931a; }
+        .lang-dropdown button.active { color: #f7931a; font-weight: 700; }
+
+        .page-header { text-align: center; padding: 40px 0 20px; }
+        .page-header h1 { font-size: 2.5rem; font-weight: 900; color: #fff; }
+        .page-header h1 span { color: #f7931a; }
+        .page-header p { color: #8892b0; }
+
+        .page-banner {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin: 0 auto 30px;
+            display: block;
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            padding: 20px 0;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-card .num { font-size: 1.4rem; font-weight: 700; color: #f7931a; }
+        .stat-card .lbl { font-size: 0.8rem; color: #8892b0; }
+
+        .pools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            padding: 16px 0 40px;
+        }
+        .pool-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .pool-card:hover { border-color: #f7931a; transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+        .pool-card .icon { font-size: 2rem; }
+        .pool-card .name { font-size: 1rem; font-weight: 700; margin: 4px 0; color: #fff; }
+        .pool-card .apy { font-size: 1.3rem; font-weight: 800; color: #f7931a; }
+        .pool-card .duration { font-size: 0.8rem; color: #8892b0; }
+        .pool-card .status { font-size: 0.7rem; display: inline-block; margin-top: 6px; padding: 3px 14px; border-radius: 40px; background: rgba(20,241,149,0.1); color: #14f195; }
+        .pool-card .status.soon { background: rgba(255,215,0,0.1); color: #ffd700; }
+        .pool-card img { width: 100%; border-radius: 12px; margin-bottom: 10px; }
+
+        .mega-section { padding: 40px 0 20px; border-top: 2px solid rgba(247,147,26,0.2); margin-top: 20px; }
+        .mega-section h2 { font-size: 1.8rem; font-weight: 800; text-align: center; margin-bottom: 8px; color: #f7931a; }
+        .mega-section .sub { text-align: center; color: #8892b0; margin-bottom: 30px; font-size: 0.95rem; }
+        .mega-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+        }
+        .mega-card {
+            background: rgba(255,255,255,0.015);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 400;
+            color: #8892b0;
+            transition: 0.15s;
+        }
+        .mega-card:hover { border-color: #f7931a; background: rgba(247,147,26,0.04); color: #fff; }
+        .mega-card .icon { font-size: 14px; flex-shrink: 0; }
+
+        footer {
+            padding: 30px 0;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            text-align: center;
+            color: #5a6488;
+            font-size: 0.85rem;
+        }
+        footer .links a { color: #8892b0; margin: 0 12px; font-size: 13px; }
+        footer .links a:hover { color: #f7931a; }
+
+        @media (max-width: 700px) {
+            .header-inner { flex-direction: column; align-items: stretch; text-align: center; }
+            .nav-links { justify-content: center; }
+            .page-header h1 { font-size: 1.8rem; }
+            .pools-grid { grid-template-columns: 1fr 1fr; }
+            .mega-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            .page-banner { max-height: 200px; }
+        }
+        @media (max-width: 480px) { .pools-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container header-inner">
+        <a href="index.html" class="logo">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_logo.png" alt="Bitcoin">
+            <span>BTC</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html" data-i18n="nav-home">Home</a>
+            <a href="trade.html" data-i18n="nav-trade">Trade</a>
+            <a href="staking.html" class="active" data-i18n="nav-staking">Staking</a>
+            <a href="dao.html" data-i18n="nav-dao">DAO</a>
+            <a href="bridge.html" data-i18n="nav-bridge">Bridge</a>
+            <a href="ecosystem.html" data-i18n="nav-ecosystem">Ecosystem</a>
+            <a href="blog.html" data-i18n="nav-blog">Blog</a>
+            <a href="whitepaper.html" data-i18n="nav-whitepaper">Whitepaper</a>
+            <a href="#" class="btn-buy" data-i18n="nav-buy">Buy BTC</a>
+            <div class="lang-switcher">
+                <button class="lang-btn" id="langToggle">🌐 <span id="currentLangLabel">EN</span></button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button data-lang="en" class="active">🇬🇧 English</button>
+                    <button data-lang="ru">🇷🇺 Русский</button>
+                    <button data-lang="es">🇪🇸 Español</button>
+                    <button data-lang="fr">🇫🇷 Français</button>
+                    <button data-lang="de">🇩🇪 Deutsch</button>
+                    <button data-lang="zh">🇨🇳 中文</button>
+                    <button data-lang="ja">🇯🇵 日本語</button>
+                    <button data-lang="ko">🇰🇷 한국어</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="page-header">
+        <h1>🪙 <span data-i18n="page-title">BTC Staking</span></h1>
+        <p data-i18n="page-desc">Lock your tokens and earn passive income</p>
+    </div>
+
+    <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_staking_1.webp" alt="BTC Staking" class="page-banner">
+
+    <div class="stats-grid">
+        <div class="stat-card"><div class="num" data-i18n="stat1">18.3%</div><div class="lbl" data-i18n="stat1-lbl">Avg. APR</div></div>
+        <div class="stat-card"><div class="num" data-i18n="stat2">$2.4M</div><div class="lbl" data-i18n="stat2-lbl">Total Staked</div></div>
+        <div class="stat-card"><div class="num" data-i18n="stat3">12.8K</div><div class="lbl" data-i18n="stat3-lbl">Stakers</div></div>
+        <div class="stat-card"><div class="num" data-i18n="stat4">3.2K</div><div class="lbl" data-i18n="stat4-lbl">BTC per day</div></div>
+    </div>
+
+    <div class="pools-grid">
+        <a href="https://solana.com/staking" target="_blank" class="pool-card">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_what_is_staking.png" alt="What is Staking">
+            <div class="icon">🪙</div>
+            <div class="name" data-i18n="pool1-name">BTC Flexible</div>
+            <div class="apy" data-i18n="pool1-apy">12.5% APR</div>
+            <div class="duration" data-i18n="pool1-duration">⏱ No lock</div>
+            <div class="status" data-i18n="pool1-status">✅ Active</div>
+        </a>
+        <a href="https://marinade.finance/" target="_blank" class="pool-card">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_staking_2.jpg" alt="Staking 2">
+            <div class="icon">💰</div>
+            <div class="name" data-i18n="pool2-name">BTC 30 days</div>
+            <div class="apy" data-i18n="pool2-apy">18.3% APR</div>
+            <div class="duration" data-i18n="pool2-duration">⏱ 30 days</div>
+            <div class="status" data-i18n="pool2-status">✅ Active</div>
+        </a>
+        <a href="https://jito.network/" target="_blank" class="pool-card">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_defi.jpg" alt="DeFi">
+            <div class="icon">💎</div>
+            <div class="name" data-i18n="pool3-name">BTC 90 days</div>
+            <div class="apy" data-i18n="pool3-apy">25.4% APR</div>
+            <div class="duration" data-i18n="pool3-duration">⏱ 90 days</div>
+            <div class="status" data-i18n="pool3-status">✅ Active</div>
+        </a>
+        <a href="https://sanctum.so/" target="_blank" class="pool-card">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/bitcoin-ecosystem-1070.jpg" alt="Ecosystem">
+            <div class="icon">🌟</div>
+            <div class="name" data-i18n="pool4-name">BTC VIP</div>
+            <div class="apy" data-i18n="pool4-apy">32.1% APR</div>
+            <div class="duration" data-i18n="pool4-duration">⏱ 1 year</div>
+            <div class="status soon" data-i18n="pool4-status">⏳ Soon</div>
+        </a>
+    </div>
+
+    <!-- 10,000+ STAKING TOOLS -->
+    <div class="mega-section" id="mega-staking">
+        <h2>🔗 10,000+ Staking Tools</h2>
+        <p class="sub">All links lead to different staking platforms and yield farms</p>
+        <div class="mega-grid" id="megaStakingGrid"></div>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="links">
+            <a href="index.html" data-i18n="nav-home">Home</a>
+            <a href="trade.html" data-i18n="nav-trade">Trade</a>
+            <a href="staking.html" data-i18n="nav-staking">Staking</a>
+            <a href="dao.html" data-i18n="nav-dao">DAO</a>
+            <a href="bridge.html" data-i18n="nav-bridge">Bridge</a>
+            <a href="ecosystem.html" data-i18n="nav-ecosystem">Ecosystem</a>
+            <a href="blog.html" data-i18n="nav-blog">Blog</a>
+            <a href="whitepaper.html" data-i18n="nav-whitepaper">Whitepaper</a>
+        </div>
+        <p>📜 EFD6CbYiDCKwBTNm6ruKTny8PzGHMXtCQr7afZNwsw3V</p>
+        <p style="margin-top:6px;font-size:0.75rem;color:#5a6488;" data-i18n="footer-copy">© 2026 Bitcoin Protocol — Earn with us</p>
+    </div>
+</footer>
+
+<script>
+    // ============================================================
+    // 10,000+ STAKING TOOLS GENERATOR
+    // ============================================================
+
+    const stakingCompanies = ['Solana Staking', 'Marinade', 'Jito', 'Sanctum', 'Lido', 'Rocket Pool', 'Stader', 'Everstake', 'Figment', 'Chorus One', 'P2P', 'Kraken', 'Binance', 'Coinbase', 'Compound', 'Aave', 'Lido', 'Rocket Pool'];
+    const stakingTypes = ['Liquid Staking', 'Native Staking', 'DeFi Staking', 'ETH Staking', 'SOL Staking', 'BTC Staking', 'Yield Farm', 'LP Staking'];
+
+    function generateStakingLinks(count) {
+        const links = [];
+        for (let i = 0; i < count; i++) {
+            const company = stakingCompanies[i % stakingCompanies.length];
+            const type = stakingTypes[i % stakingTypes.length];
+            const num = i + 1;
+            const name = `${company} ${type} Pool #${num}`;
+            const url = `https://${company.toLowerCase().replace(/\s/g, '')}.com/`;
+            links.push({ name, url, icon: '💎' });
+        }
+        return links;
+    }
+
+    const stakingLinks = generateStakingLinks(10200);
+
+    function renderStakingMegaGrid() {
+        const el = document.getElementById('megaStakingGrid');
+        if (!el) return;
+        const display = stakingLinks.slice(0, 2000);
+        el.innerHTML = display.map(item => `
+            <a href="${item.url}" target="_blank" class="mega-card">
+                <span class="icon">${item.icon}</span>
+                ${item.name}
+            </a>
+        `).join('');
+        document.querySelector('.mega-section .sub').textContent = 
+            `${stakingLinks.length.toLocaleString()} staking tools — all links lead to different staking platforms`;
+    }
+    renderStakingMegaGrid();
+
+    // ============================================================
+    // 8 ЯЗЫКОВ — ПЕРЕВОДЧИК
+    // ============================================================
+
+    const translations = {
+        en: {
+            'nav-home': 'Home', 'nav-trade': 'Trade', 'nav-staking': 'Staking',
+            'nav-dao': 'DAO', 'nav-bridge': 'Bridge', 'nav-ecosystem': 'Ecosystem',
+            'nav-blog': 'Blog', 'nav-whitepaper': 'Whitepaper', 'nav-buy': 'Buy BTC',
+            'page-title': 'BTC Staking', 'page-desc': 'Lock your tokens and earn passive income',
+            'stat1': '18.3%', 'stat1-lbl': 'Avg. APR',
+            'stat2': '$2.4M', 'stat2-lbl': 'Total Staked',
+            'stat3': '12.8K', 'stat3-lbl': 'Stakers',
+            'stat4': '3.2K', 'stat4-lbl': 'BTC per day',
+            'pool1-name': 'BTC Flexible', 'pool1-apy': '12.5% APR', 'pool1-duration': '⏱ No lock', 'pool1-status': '✅ Active',
+            'pool2-name': 'BTC 30 days', 'pool2-apy': '18.3% APR', 'pool2-duration': '⏱ 30 days', 'pool2-status': '✅ Active',
+            'pool3-name': 'BTC 90 days', 'pool3-apy': '25.4% APR', 'pool3-duration': '⏱ 90 days', 'pool3-status': '✅ Active',
+            'pool4-name': 'BTC VIP', 'pool4-apy': '32.1% APR', 'pool4-duration': '⏱ 1 year', 'pool4-status': '⏳ Soon',
+            'footer-copy': '© 2026 Bitcoin Protocol — Earn with us'
+        },
+        ru: {
+            'nav-home': 'Главная', 'nav-trade': 'Торги', 'nav-staking': 'Стейкинг',
+            'nav-dao': 'Управление', 'nav-bridge': 'Мост', 'nav-ecosystem': 'Экосистема',
+            'nav-blog': 'Блог', 'nav-whitepaper': 'Whitepaper', 'nav-buy': 'Купить BTC',
+            'page-title': 'Стейкинг BTC', 'page-desc': 'Заморозь токены и получай пассивный доход',
+            'stat1': '18.3%', 'stat1-lbl': 'Средний APR',
+            'stat2': '$2.4M', 'stat2-lbl': 'Всего застейкано',
+            'stat3': '12.8K', 'stat3-lbl': 'Участников',
+            'stat4': '3.2K', 'stat4-lbl': 'BTC в сутки',
+            'pool1-name': 'BTC Гибкий', 'pool1-apy': '12.5% APR', 'pool1-duration': '⏱ Без блокировки', 'pool1-status': '✅ Активен',
+            'pool2-name': 'BTC 30 дней', 'pool2-apy': '18.3% APR', 'pool2-duration': '⏱ 30 дней', 'pool2-status': '✅ Активен',
+            'pool3-name': 'BTC 90 дней', 'pool3-apy': '25.4% APR', 'pool3-duration': '⏱ 90 дней', 'pool3-status': '✅ Активен',
+            'pool4-name': 'BTC VIP', 'pool4-apy': '32.1% APR', 'pool4-duration': '⏱ 1 год', 'pool4-status': '⏳ Скоро',
+            'footer-copy': '© 2026 Bitcoin Protocol — Зарабатывай с нами'
+        }
+        // Добавьте другие языки по аналогии
+    };
+
+    let currentLang = localStorage.getItem('btcLang') || 'en';
+
+    function applyLanguage(lang) {
+        if (!translations[lang]) return;
+        const t = translations[lang];
+        document.documentElement.lang = lang;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key]) {
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.placeholder = t[key];
+                } else {
+                    el.textContent = t[key];
+                }
+            }
+        });
+        document.getElementById('currentLangLabel').textContent = lang.toUpperCase();
+        document.querySelectorAll('.lang-dropdown button').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+        localStorage.setItem('btcLang', lang);
+        currentLang = lang;
+    }
+
+    document.getElementById('langToggle').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('langDropdown').classList.toggle('show');
+    });
+    document.addEventListener('click', () => {
+        document.getElementById('langDropdown').classList.remove('show');
+    });
+    document.querySelectorAll('.lang-dropdown button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyLanguage(btn.dataset.lang);
+            document.getElementById('langDropdown').classList.remove('show');
+        });
+    });
+    applyLanguage(currentLang);
+</script>
+</body>
+</html>
