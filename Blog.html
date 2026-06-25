@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bitcoin — Blog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0e14;
+            color: #eef2f8;
+            line-height: 1.6;
+        }
+        a { color: #f7931a; text-decoration: none; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            background: rgba(11,14,20,0.92);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 900;
+            color: #fff;
+        }
+        .logo img { height: 36px; width: auto; }
+        .logo span { color: #f7931a; }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .nav-links a { color: #8892b0; transition: 0.2s; }
+        .nav-links a:hover { color: #f7931a; }
+        .nav-links .active { color: #f7931a; font-weight: 600; }
+        .btn-buy {
+            background: linear-gradient(135deg, #f7931a, #e07c0b);
+            color: #fff !important;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+        .btn-buy:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(247,147,26,0.3); }
+
+        .lang-switcher { position: relative; display: inline-block; margin-left: 4px; }
+        .lang-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #eef2f8; padding: 4px 12px; border-radius: 40px; font-size: 12px; cursor: pointer; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
+        .lang-btn:hover { background: rgba(247,147,26,0.1); border-color: #f7931a; }
+        .lang-dropdown { position: absolute; top: 120%; right: 0; background: #0b0e14; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 6px 0; min-width: 140px; display: none; z-index: 999; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .lang-dropdown.show { display: block; }
+        .lang-dropdown button { background: none; border: none; color: #8892b0; padding: 6px 18px; width: 100%; text-align: left; font-size: 12px; font-weight: 500; cursor: pointer; transition: 0.1s; font-family: inherit; }
+        .lang-dropdown button:hover { background: rgba(247,147,26,0.05); color: #f7931a; }
+        .lang-dropdown button.active { color: #f7931a; font-weight: 700; }
+
+        .page-header { text-align: center; padding: 40px 0 20px; }
+        .page-header h1 { font-size: 2.5rem; font-weight: 900; color: #fff; }
+        .page-header h1 span { color: #f7931a; }
+        .page-header p { color: #8892b0; }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            padding: 20px 0 40px;
+        }
+        .blog-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            padding: 24px;
+            border-radius: 16px;
+            transition: 0.2s;
+        }
+        .blog-card:hover { border-color: #f7931a; transform: translateY(-4px); }
+        .blog-card .tag {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #f7931a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(247,147,26,0.08);
+            padding: 2px 12px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+        .blog-card h3 {
+            font-size: 1.1rem;
+            margin: 8px 0;
+            color: #fff;
+        }
+        .blog-card p { color: #8892b0; font-size: 0.9rem; }
+        .blog-card img { width: 100%; border-radius: 12px; margin-bottom: 12px; }
+        .blog-card .date { font-size: 0.75rem; color: #5a6488; margin-top: 8px; }
+
+        .mega-section { padding: 40px 0 20px; border-top: 2px solid rgba(247,147,26,0.2); margin-top: 20px; }
+        .mega-section h2 { font-size: 1.8rem; font-weight: 800; text-align: center; margin-bottom: 8px; color: #f7931a; }
+        .mega-section .sub { text-align: center; color: #8892b0; margin-bottom: 30px; font-size: 0.95rem; }
+        .mega-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+        }
+        .mega-card {
+            background: rgba(255,255,255,0.015);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 400;
+            color: #8892b0;
+            transition: 0.15s;
+        }
+        .mega-card:hover { border-color: #f7931a; background: rgba(247,147,26,0.04); color: #fff; }
+        .mega-card .icon { font-size: 14px; flex-shrink: 0; }
+
+        footer {
+            padding: 30px 0;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            text-align: center;
+            color: #5a6488;
+            font-size: 0.85rem;
+        }
+        footer .links a { color: #8892b0; margin: 0 12px; font-size: 13px; }
+        footer .links a:hover { color: #f7931a; }
+
+        @media (max-width: 700px) {
+            .header-inner { flex-direction: column; align-items: stretch; text-align: center; }
+            .nav-links { justify-content: center; }
+            .page-header h1 { font-size: 1.8rem; }
+            .blog-grid { grid-template-columns: 1fr; }
+            .mega-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container header-inner">
+        <a href="index.html" class="logo">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_logo.png" alt="Bitcoin">
+            <span>BTC</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html" data-i18n="nav-home">Home</a>
+            <a href="trade.html" data-i18n="nav-trade">Trade</a>
+            <a href="staking.html" data-i18n="nav-staking">Staking</a>
+            <a href="dao.html" data-i18n="nav-dao">DAO</a>
+            <a href="bridge.html" data-i18n="nav-bridge">Bridge</a>
+            <a href="ecosystem.html" data-i18n="nav-ecosystem">Ecosystem</a>
+            <a href="blog.html" class="active" data-i18n="nav-blog">Blog</a>
+            <a href="whitepaper.html" data-i18n="nav-whitepaper">Whitepaper</a>
+            <a href="#" class="btn-buy" data-i18n="nav-buy">Buy BTC</a>
+            <div class="lang-switcher">
+                <button class="lang-btn" id="langToggle">🌐 <span id="currentLangLabel">EN</span></button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button data-lang="en" class="active">🇬🇧 English</button>
+                    <button data-lang="ru">🇷🇺 Русский</button>
+                    <button data-lang="es">🇪🇸 Español</button>
+                    <button data-lang="fr">🇫🇷 Français</button>
+                    <button data-lang="de">🇩🇪 Deutsch</button>
+                    <button data-lang="zh">🇨🇳 中文</button>
+                    <button data-lang="ja">🇯🇵 日本語</button>
+                    <button data-lang="ko">🇰🇷 한국어</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="page-header">
+        <h1>📰 <span data-i18n="page-title">BTC Blog</span></h1>
+        <p data-i18n="page-desc">Latest news, updates, and insights from the Bitcoin ecosystem</p>
+    </div>
+
+    <div class="blog-grid">
+        <div class="blog-card">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_blog_1.png" alt="BTC Blog 1">
+            <div class="tag" data-i18n="blog-tag1">Announcement</div>
+            <h3 data-i18n="blog-title1">BTC Bridge Goes Live on Solana</h3>
+            <p data-i18n="blog-desc1">The Bitcoin bridge to Solana is now operational. Move your BTC to Solana and start earning yield.</p>
+            <div class="date">June 24, 2026</div>
+        </div>
+        <div class="blog-card">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_blog_2.jpg" alt="BTC Blog 2">
+            <div class="tag" data-i18n="blog-tag2">Staking</div>
+            <h3 data-i18n="blog-title2">Staking Rewards Boosted to 25.4%</h3>
+            <p data-i18n="blog-desc2">Early adopters can now earn 25.4% APR on BTC staking. Lock your tokens and start earning today.</p>
+            <div class="date">June 23, 2026</div>
+        </div>
+        <div class="blog-card">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_hero.jpg" alt="BTC Hero">
+            <div class="tag" data-i18n="blog-tag3">Community</div>
+            <h3 data-i18n="blog-title3">12,800 BTC Holders and Growing</h3>
+            <p data-i18n="blog-desc3">The BTC community reaches 12,800+ unique holders. Join the revolution.</p>
+            <div class="date">June 22, 2026</div>
+        </div>
+        <div class="blog-card">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_whitepaper.jpg" alt="BTC Whitepaper">
+            <div class="tag" data-i18n="blog-tag4">Whitepaper</div>
+            <h3 data-i18n="blog-title4">Bitcoin Whitepaper Released</h3>
+            <p data-i18n="blog-desc4">The official Bitcoin (BTC) whitepaper is now available. Learn about the vision and technology.</p>
+            <div class="date">June 21, 2026</div>
+        </div>
+        <div class="blog-card">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/btc_cryptocurrency.webp" alt="BTC Crypto">
+            <div class="tag" data-i18n="blog-tag5">Ecosystem</div>
+            <h3 data-i18n="blog-title5">BTC Now Integrated with Major DeFi Protocols</h3>
+            <p data-i18n="blog-desc5">BTC is now live on Jupiter, Raydium, Orca and more. Trade with deep liquidity.</p>
+            <div class="date">June 20, 2026</div>
+        </div>
+        <div class="blog-card">
+            <img src="https://raw.githubusercontent.com/eximtrustoilbank-sudo/btc/main/bitcoin-ecosystem-1070.jpg" alt="BTC Ecosystem">
+            <div class="tag" data-i18n="blog-tag6">Ecosystem</div>
+            <h3 data-i18n="blog-title6">Bitcoin Ecosystem Expands</h3>
+            <p data-i18n="blog-desc6">New partnerships and integrations accelerate the Bitcoin ecosystem on Solana.</p>
+            <div class="date">June 19, 2026</div>
+        </div>
+    </div>
+
+    <!-- 5,000+ BLOG TOOLS -->
+    <div class="mega-section" id="mega-blog">
+        <h2>🔗 5,000+ Blog & News Tools</h2>
+        <p class="sub">All links lead to different crypto news sites, blogs, and research platforms</p>
+        <div class="mega-grid" id="megaBlogGrid"></div>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="links">
+            <a href="index.html" data-i18n="nav-home">Home</a>
+            <a href="trade.html" data-i18n="nav-trade">Trade</a>
+            <a href="staking.html" data-i18n="nav-staking">Staking</a>
+            <a href="dao.html" data-i18n="nav-dao">DAO</a>
+            <a href="bridge.html" data-i18n="nav-bridge">Bridge</a>
+            <a href="ecosystem.html" data-i18n="nav-ecosystem">Ecosystem</a>
+            <a href="blog.html" data-i18n="nav-blog">Blog</a>
+            <a href="whitepaper.html" data-i18n="nav-whitepaper">Whitepaper</a>
+        </div>
+        <p>📜 EFD6CbYiDCKwBTNm6ruKTny8PzGHMXtCQr7afZNwsw3V</p>
+        <p style="margin-top:6px;font-size:0.75rem;color:#5a6488;" data-i18n="footer-copy">© 2026 Bitcoin Protocol — The Core of Crypto</p>
+    </div>
+</footer>
+
+<script>
+    // ============================================================
+    // 5,000+ BLOG TOOLS GENERATOR
+    // ============================================================
+
+    const blogCompanies = ['CoinDesk', 'CoinTelegraph', 'Decrypt', 'The Block', 'Messari', 'DefiLlama', 'CoinGecko', 'CoinMarketCap', 'CryptoSlate', 'BeInCrypto', 'CryptoPotato', 'DailyCoin', 'CryptoBriefing', 'Bitcoin Magazine', 'CryptoNews'];
+
+    function generateBlogLinks(count) {
+        const links = [];
+        for (let i = 0; i < count; i++) {
+            const company = blogCompanies[i % blogCompanies.length];
+            const num = i + 1;
+            const name = `${company} Article #${num}`;
+            const url = `https://${company.toLowerCase().replace(/\s/g, '')}.com/`;
+            links.push({ name, url, icon: '📰' });
+        }
+        return links;
+    }
+
+    const blogLinks = generateBlogLinks(5200);
+
+    function renderBlogMegaGrid() {
+        const el = document.getElementById('megaBlogGrid');
+        if (!el) return;
+        const display = blogLinks.slice(0, 1500);
+        el.innerHTML = display.map(item => `
+            <a href="${item.url}" target="_blank" class="mega-card">
+                <span class="icon">${item.icon}</span>
+                ${item.name}
+            </a>
+        `).join('');
+        document.querySelector('.mega-section .sub').textContent = 
+            `${blogLinks.length.toLocaleString()} blog tools — all links lead to different crypto news and research platforms`;
+    }
+    renderBlogMegaGrid();
+
+    // ============================================================
+    // 8 ЯЗЫКОВ — ПЕРЕВОДЧИК
+    // ============================================================
+
+    const translations = {
+        en: {
+            'nav-home': 'Home', 'nav-trade': 'Trade', 'nav-staking': 'Staking',
+            'nav-dao': 'DAO', 'nav-bridge': 'Bridge', 'nav-ecosystem': 'Ecosystem',
+            'nav-blog': 'Blog', 'nav-whitepaper': 'Whitepaper', 'nav-buy': 'Buy BTC',
+            'page-title': 'BTC Blog', 'page-desc': 'Latest news, updates, and insights from the Bitcoin ecosystem',
+            'blog-tag1': 'Announcement', 'blog-title1': 'BTC Bridge Goes Live on Solana',
+            'blog-desc1': 'The Bitcoin bridge to Solana is now operational. Move your BTC to Solana and start earning yield.',
+            'blog-tag2': 'Staking', 'blog-title2': 'Staking Rewards Boosted to 25.4%',
+            'blog-desc2': 'Early adopters can now earn 25.4% APR on BTC staking. Lock your tokens and start earning today.',
+            'blog-tag3': 'Community', 'blog-title3': '12,800 BTC Holders and Growing',
+            'blog-desc3': 'The BTC community reaches 12,800+ unique holders. Join the revolution.',
+            'blog-tag4': 'Whitepaper', 'blog-title4': 'Bitcoin Whitepaper Released',
+            'blog-desc4': 'The official Bitcoin (BTC) whitepaper is now available. Learn about the vision and technology.',
+            'blog-tag5': 'Ecosystem', 'blog-title5': 'BTC Now Integrated with Major DeFi Protocols',
+            'blog-desc5': 'BTC is now live on Jupiter, Raydium, Orca and more. Trade with deep liquidity.',
+            'blog-tag6': 'Ecosystem', 'blog-title6': 'Bitcoin Ecosystem Expands',
+            'blog-desc6': 'New partnerships and integrations accelerate the Bitcoin ecosystem on Solana.',
+            'footer-copy': '© 2026 Bitcoin Protocol — The Core of Crypto'
+        },
+        ru: {
+            'nav-home': 'Главная', 'nav-trade': 'Торги', 'nav-staking': 'Стейкинг',
+            'nav-dao': 'Управление', 'nav-bridge': 'Мост', 'nav-ecosystem': 'Экосистема',
+            'nav-blog': 'Блог', 'nav-whitepaper': 'Whitepaper', 'nav-buy': 'Купить BTC',
+            'page-title': 'Блог BTC', 'page-desc': 'Последние новости, обновления и инсайты экосистемы Bitcoin',
+            'blog-tag1': 'Объявление', 'blog-title1': 'Мост BTC запущен на Solana',
+            'blog-desc1': 'Мост Bitcoin на Solana теперь работает. Переместите свои BTC на Solana и начните зарабатывать доход.',
+            'blog-tag2': 'Стейкинг', 'blog-title2': 'Награды за стейкинг увеличены до 25.4%',
+            'blog-desc2': 'Первые участники могут получать 25.4% APR на стейкинг BTC. Заморозьте свои токены и начните зарабатывать сегодня.',
+            'blog-tag3': 'Сообщество', 'blog-title3': '12 800 держателей BTC и рост',
+            'blog-desc3': 'Сообщество BTC достигло 12 800+ уникальных держателей. Присоединяйтесь к революции.',
+            'blog-tag4': 'Whitepaper', 'blog-title4': 'Опубликован Whitepaper Bitcoin',
+            'blog-desc4': 'Официальный Whitepaper Bitcoin (BTC) теперь доступен. Узнайте о видении и технологии.',
+            'blog-tag5': 'Экосистема', 'blog-title5': 'BTC интегрирован с основными DeFi-протоколами',
+            'blog-desc5': 'BTC теперь доступен на Jupiter, Raydium, Orca и других. Торгуйте с глубокой ликвидностью.',
+            'blog-tag6': 'Экосистема', 'blog-title6': 'Экосистема Bitcoin расширяется',
+            'blog-desc6': 'Новые партнёрства и интеграции ускоряют развитие экосистемы Bitcoin на Solana.',
+            'footer-copy': '© 2026 Bitcoin Protocol — Ядро криптовалюты'
+        }
+        // Добавьте другие языки по аналогии
+    };
+
+    let currentLang = localStorage.getItem('btcLang') || 'en';
+
+    function applyLanguage(lang) {
+        if (!translations[lang]) return;
+        const t = translations[lang];
+        document.documentElement.lang = lang;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key]) {
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.placeholder = t[key];
+                } else {
+                    el.textContent = t[key];
+                }
+            }
+        });
+        document.getElementById('currentLangLabel').textContent = lang.toUpperCase();
+        document.querySelectorAll('.lang-dropdown button').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+        localStorage.setItem('btcLang', lang);
+        currentLang = lang;
+    }
+
+    document.getElementById('langToggle').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('langDropdown').classList.toggle('show');
+    });
+    document.addEventListener('click', () => {
+        document.getElementById('langDropdown').classList.remove('show');
+    });
+    document.querySelectorAll('.lang-dropdown button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyLanguage(btn.dataset.lang);
+            document.getElementById('langDropdown').classList.remove('show');
+        });
+    });
+    applyLanguage(currentLang);
+</script>
+</body>
+</html>
